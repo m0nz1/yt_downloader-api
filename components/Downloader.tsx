@@ -371,7 +371,7 @@ export function Downloader() {
                 <div className="space-y-3">
                   {selectedFormat === 'mp4' ? (
                     getVideoFormats().length > 0 ? (
-                      getVideoFormats().map((format) => (
+                      getVideoFormats().map((format: VideoFormat) => (
                         <div
                           key={String(format.itag)}
                           className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-neo-black dark:border-white"
@@ -426,7 +426,7 @@ export function Downloader() {
                     )
                   ) : (
                     getAudioFormats().length > 0 ? (
-                      getAudioFormats().map((format) => (
+                      getAudioFormats().map((format: VideoFormat) => (
                         <div
                           key={String(format.itag)}
                           className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-neo-black dark:border-white"
