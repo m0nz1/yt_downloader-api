@@ -8,13 +8,16 @@ export interface VideoInfo {
 }
 
 export interface VideoFormat {
-  itag: number;
+  itag: string | number;
   quality: string;
   type: 'video' | 'audio';
-  container: string;
-  url: string;
+  container?: string;
+  ext?: string;
+  url?: string;
   size?: string;
-  bitrate?: string;
+  size_mb?: number;
+  bitrate?: string | number;
+  format_note?: string;
 }
 
 export interface DownloadHistory {
