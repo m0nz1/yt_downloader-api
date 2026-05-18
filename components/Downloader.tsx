@@ -46,7 +46,7 @@ export function Downloader() {
   const [selectedFormat, setSelectedFormat] = useState<'mp4' | 'mp3'>('mp4');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'download' | 'history'>('download');
-  const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [downloadProgress, setDownloadProgress] = useState<string>('');
 
   const { toasts, addToast, removeToast } = useToast();
@@ -103,7 +103,7 @@ export function Downloader() {
   const handleDownload = async (format: VideoFormat, type: 'mp4' | 'mp3') => {
     if (!videoInfo) return;
 
-    setDownloadingId(format.itag);
+    setDownloadingId(String(format.itag));
     setDownloadProgress('Mengunduh di server...');
 
     try {
@@ -373,7 +373,7 @@ export function Downloader() {
                     getVideoFormats().length > 0 ? (
                       getVideoFormats().map((format) => (
                         <div
-                          key={format.itag}
+                          key={String(format.itag)}
                           className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-neo-black dark:border-white"
                         >
                           <div className="flex items-center gap-3">
@@ -381,17 +381,17 @@ export function Downloader() {
                             <div>
                               <p className="font-bold text-sm text-neo-black dark:text-white">{format.quality}</p>
                               <p className="text-xs text-gray-500">
-                                {format.ext} {format.size_mb && `• ${format.size_mb} MB`} {format.bitrate && `• ${format.bitrate}kbps`}
+                                {format.ext || format.container || "mp4"} {format.size_mb && `• ${format.size_mb} MB`} {format.bitrate && `• ${format.bitrate}kbps`}
                               </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => copyToClipboard(format.itag, `video-${format.itag}`)}
+                              onClick={() => copyToClipboard(String(format.itag), `video-${format.itag}`)}
                               className="w-9 h-9 flex items-center justify-center border-neo border-neo-black dark:border-white rounded-lg bg-white dark:bg-gray-700 shadow-neo hover:shadow-neo-hover transition-all"
                               title="Copy format ID"
                             >
-                              {copiedId === `video-${format.itag}` ? (
+                              {copiedId === `video-${String(format.itag)}` ? (
                                 <Check className="w-4 h-4 text-neo-green" />
                               ) : (
                                 <Copy className="w-4 h-4 text-neo-black dark:text-white" />
@@ -399,10 +399,10 @@ export function Downloader() {
                             </button>
                             <button
                               onClick={() => handleDownload(format, 'mp4')}
-                              disabled={downloadingId === format.itag}
+                              disabled={downloadingId === String(format.itag)}
                               className="neo-button-primary text-sm py-2 px-4 disabled:opacity-60"
                             >
-                              {downloadingId === format.itag ? (
+                              {downloadingId === String(format.itag) ? (
                                 <Loader2 className="w-4 h-4 spinner" />
                               ) : (
                                 <Download className="w-4 h-4 mr-1" />
@@ -428,7 +428,7 @@ export function Downloader() {
                     getAudioFormats().length > 0 ? (
                       getAudioFormats().map((format) => (
                         <div
-                          key={format.itag}
+                          key={String(format.itag)}
                           className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-neo-black dark:border-white"
                         >
                           <div className="flex items-center gap-3">
@@ -436,17 +436,17 @@ export function Downloader() {
                             <div>
                               <p className="font-bold text-sm text-neo-black dark:text-white">{format.quality}</p>
                               <p className="text-xs text-gray-500">
-                                {format.ext} {format.bitrate && `• ${format.bitrate}kbps`} {format.size_mb && `• ${format.size_mb} MB`}
+                                {format.ext || format.container || "mp4"} {format.bitrate && `• ${format.bitrate}kbps`} {format.size_mb && `• ${format.size_mb} MB`}
                               </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => copyToClipboard(format.itag, `audio-${format.itag}`)}
+                              onClick={() => copyToClipboard(String(format.itag), `audio-${format.itag}`)}
                               className="w-9 h-9 flex items-center justify-center border-neo border-neo-black dark:border-white rounded-lg bg-white dark:bg-gray-700 shadow-neo hover:shadow-neo-hover transition-all"
                               title="Copy format ID"
                             >
-                              {copiedId === `audio-${format.itag}` ? (
+                              {copiedId === `audio-${String(format.itag)}` ? (
                                 <Check className="w-4 h-4 text-neo-green" />
                               ) : (
                                 <Copy className="w-4 h-4 text-neo-black dark:text-white" />
@@ -454,10 +454,10 @@ export function Downloader() {
                             </button>
                             <button
                               onClick={() => handleDownload(format, 'mp3')}
-                              disabled={downloadingId === format.itag}
+                              disabled={downloadingId === String(format.itag)}
                               className="neo-button-dark text-sm py-2 px-4 disabled:opacity-60"
                             >
-                              {downloadingId === format.itag ? (
+                              {downloadingId === String(format.itag) ? (
                                 <Loader2 className="w-4 h-4 spinner" />
                               ) : (
                                 <Download className="w-4 h-4 mr-1" />
