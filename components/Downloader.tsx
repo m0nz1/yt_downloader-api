@@ -28,7 +28,7 @@ import {
   HardDrive,
 } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = 'https://web-production-fda66a.up.railway.app';
 
 interface VideoInfo {
   id: string;
