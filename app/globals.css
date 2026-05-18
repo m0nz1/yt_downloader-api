@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --font-space-grotesk: 'Space Grotesk', sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased;
+  }
+}
+
+@layer components {
+  .neo-card {
+    @apply bg-white dark:bg-gray-900 border-neo border-neo-black dark:border-white rounded-xl shadow-neo transition-all duration-200;
+  }
+
+  .neo-card:hover {
+    @apply shadow-neo-hover translate-x-[2px] translate-y-[2px];
+  }
+
+  .neo-button {
+    @apply inline-flex items-center justify-center px-6 py-3 font-bold text-base border-neo border-neo-black rounded-lg shadow-neo transition-all duration-200 active:shadow-neo-none active:translate-x-[4px] active:translate-y-[4px] hover:shadow-neo-hover hover:translate-x-[2px] hover:translate-y-[2px];
+  }
+
+  .neo-button-primary {
+    @apply neo-button bg-neo-blue text-white hover:bg-neo-blue-dark;
+  }
+
+  .neo-button-secondary {
+    @apply neo-button bg-neo-yellow text-neo-black hover:bg-neo-yellow-dark;
+  }
+
+  .neo-button-dark {
+    @apply neo-button bg-neo-purple text-white hover:bg-neo-purple-dark;
+  }
+
+  .neo-input {
+    @apply w-full px-4 py-3 bg-white dark:bg-gray-800 border-neo border-neo-black dark:border-white rounded-lg shadow-neo focus:outline-none focus:shadow-neo-hover focus:translate-x-[2px] focus:translate-y-[2px] transition-all duration-200 text-neo-black dark:text-white placeholder-gray-500;
+  }
+
+  .neo-badge {
+    @apply inline-flex items-center px-3 py-1 text-sm font-bold border-neo border-neo-black dark:border-white rounded-full;
+  }
+
+  .neo-tag {
+    @apply inline-flex items-center px-2 py-1 text-xs font-bold border-2 border-neo-black dark:border-white rounded-md;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-neo-black dark:bg-white border-2 border-transparent rounded-full;
+}
+
+/* Toast animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.toast-enter {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.toast-exit {
+  animation: slideOut 0.3s ease-in forwards;
+}
+
+/* Loading spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
