@@ -109,23 +109,18 @@ def info():
 
         info_json = json.loads(result.stdout.strip().split("\n")[0])
 
-        # Get all available formats
-        formats = []
-        seen_qualities = set()
+        # Get ALL available formats - include everything yt-dlp returns
+        video_formats = []
+        audio_formats = []
+        seen_video = set()
+        seen_audio = set()
 
         for f in info_json.get("formats", []):
-            # Skip video-only formats (no audio)
-            if f.get("vcodec") != "none" and f.get("acodec") == "none":
-                continue
-
+            format_id = f.get("format_id", "")
             quality = f.get("quality_label") or f.get("format_note") or f.get("resolution", "unknown")
             ext = f.get("ext", "mp4")
-
-            # Deduplicate by quality
-            key = f"{quality}_{ext}"
-            if key in seen_qualities:
-                continue
-            seen_qualities.add(key)
+            vcodec = f.get("vcodec", "none")
+            acodec = f.get("acodec", "none")
 
             size_mb = None
             if f.get("filesize"):
@@ -133,24 +128,60 @@ def info():
             elif f.get("filesize_approx"):
                 size_mb = round(f["filesize_approx"] / (1024 * 1024), 1)
 
-            formats.append({
-                "itag": f.get("format_id"),
+            format_data = {
+                "itag": format_id,
                 "quality": quality,
                 "ext": ext,
-                "type": "audio" if f.get("vcodec") == "none" else "video",
                 "size_mb": size_mb,
                 "bitrate": f.get("abr"),
                 "format_note": f.get("format_note"),
-            })
+                "vcodec": vcodec,
+                "acodec": acodec,
+            }
 
-        # Sort video first then audio, by quality desc
-        video_fmts = [f for f in formats if f["type"] == "video"]
-        audio_fmts = [f for f in formats if f["type"] == "audio"]
+            # Categorize: video+audio combined, video-only, audio-only
+            has_video = vcodec != "none"
+            has_audio = acodec != "none"
 
-        quality_order = {"144p": 1, "240p": 2, "360p": 3, "480p": 4, "720p": 5, 
-                        "1080p": 6, "1440p": 7, "2160p": 8, "4K": 8, "8K": 9}
-        video_fmts.sort(key=lambda x: quality_order.get(x["quality"], 99))
-        audio_fmts.sort(key=lambda x: x.get("bitrate") or 0, reverse=True)
+            if has_video and has_audio:
+                # Combined video+audio - prefer these for video download
+                key = f"video_{quality}"
+                if key not in seen_video:
+                    seen_video.add(key)
+                    video_formats.append({**format_data, "type": "video"})
+            elif has_video and not has_audio:
+                # Video-only (needs merging with audio) - skip for simplicity
+                # Or include if you want highest quality options
+                key = f"video_only_{quality}"
+                if key not in seen_video:
+                    seen_video.add(key)
+                    video_formats.append({**format_data, "type": "video"})
+            elif not has_video and has_audio:
+                # Audio-only
+                key = f"audio_{quality}_{f.get('abr', '0')}"
+                if key not in seen_audio:
+                    seen_audio.add(key)
+                    audio_formats.append({**format_data, "type": "audio"})
+
+        # Sort by quality
+        quality_order = {
+            "audio only": 0, "144p": 1, "240p": 2, "360p": 3, 
+            "480p": 4, "720p": 5, "1080p": 6, 
+            "1440p": 7, "2160p": 8, "4K": 9, "8K": 10
+        }
+
+        def get_quality_sort(fmt):
+            q = fmt["quality"]
+            for key in quality_order:
+                if key in q:
+                    return quality_order[key]
+            return 99
+
+        video_formats.sort(key=get_quality_sort)
+        audio_formats.sort(key=lambda x: x.get("bitrate") or 0, reverse=True)
+
+        video_fmts = video_formats
+        audio_fmts = audio_formats
 
         return jsonify({
             "status": True,
@@ -310,3 +341,4 @@ def download(filename):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    
