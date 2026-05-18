@@ -46,7 +46,7 @@ export function Downloader() {
   const [selectedFormat, setSelectedFormat] = useState<'mp4' | 'mp3'>('mp4');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'download' | 'history'>('download');
-  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
   const [downloadProgress, setDownloadProgress] = useState<string>('');
 
   const { toasts, addToast, removeToast } = useToast();
