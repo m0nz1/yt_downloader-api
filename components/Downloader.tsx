@@ -28,7 +28,7 @@ import {
   HardDrive,
 } from 'lucide-react';
 
-const API_URL = 'https://web-production-fda66a.up.railway.app';
+const API_URL = 'https://ytdownloader-api-production.up.railway.app';
 
 interface VideoInfo {
   id: string;
